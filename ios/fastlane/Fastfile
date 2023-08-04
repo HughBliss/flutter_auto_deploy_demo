@@ -1,0 +1,45 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:ios)
+
+platform :ios do
+  desc "Push a new beta build to TestFlight"
+  lane :beta do
+    # подписываем приложение
+    sync_code_signing(
+      type: "appstore",
+      app_identifier: CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier),
+      readonly: true,
+      keychain_name: "login.keychain-db",
+      keychain_password: ENV["KEYCHAIN_PASSWORD"],
+    )
+    # собираем приложение на основе существующего архива
+    build_app(
+      skip_build_archive: true,
+      archive_path: "../build/ios/archive/Runner.xcarchive",
+      export_team_id: CredentialsManager::AppfileConfig.try_fetch_value(:team_id)
+    )
+    # публикуем приложение в тестфлайт с помощью ключа API
+    app_store_connect_api_key(
+      key_id: ENV["IOS_PUBLISH_API_KEY"],
+      issuer_id: ENV["IOS_PUBLISH_API_ISSUER"],
+      # key_content: ENV["IOS_PUBLISH_API_KEY_CONTENT"],
+      # is_key_content_base64: true,
+      key_filepath: ENV["IOS_PUBLISH_API_KEY_PATH"],
+    )
+    upload_to_testflight
+  end
+end
