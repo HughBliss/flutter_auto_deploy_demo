@@ -23,7 +23,7 @@ platform :ios do
       type: "appstore",
       app_identifier: CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier),
       readonly: true,
-      keychain_name: "login.keychain-db",
+      keychain_name: "build.keychain",
       keychain_password: ENV["KEYCHAIN_PASSWORD"],
     )
     # собираем приложение на основе существующего архива
@@ -36,9 +36,9 @@ platform :ios do
     app_store_connect_api_key(
       key_id: ENV["IOS_PUBLISH_API_KEY"],
       issuer_id: ENV["IOS_PUBLISH_API_ISSUER"],
-      # key_content: ENV["IOS_PUBLISH_API_KEY_CONTENT"],
-      # is_key_content_base64: true,
-      key_filepath: ENV["IOS_PUBLISH_API_KEY_PATH"],
+      key_content: ENV["IOS_PUBLISH_API_KEY_CONTENT"],
+      is_key_content_base64: true,
+      # key_filepath: ENV["IOS_PUBLISH_API_KEY_PATH"],
     )
     upload_to_testflight
   end

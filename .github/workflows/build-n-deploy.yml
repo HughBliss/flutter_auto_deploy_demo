@@ -12,14 +12,50 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
       - uses: actions/checkout@v3
 
-      - name: send photo message
+      - name: Use Flutter
+        uses: subosito/flutter-action@v2.10.0
+        with:
+          flutter-version: 3.10.4
+          channel: stable
+
+      - name: Build iOS
+        run: |
+          flutter pub get
+          flutter build ipa --release --no-codesign
+
+      - name: Install SSH Key
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+            ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Create Keychan
+        run : |
+          export KEYCHAIN_PATH=$GITHUB_WORKSPACE/ios/build.keychain
+          security create-keychain -p $KEYCHAIN_PASSWORD $KEYCHAIN_PATH
+          security default-keychain -s $KEYCHAIN_PATH
+        env:
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+
+      - name: Deploy to TF
+        run: |
+          cd ios
+          gem install fastlane
+          fastlane beta --verbose
+        env:
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          IOS_PUBLISH_API_KEY: ${{ secrets.IOS_PUBLISH_API_KEY }}
+          IOS_PUBLISH_API_ISSUER: ${{ secrets.IOS_PUBLISH_API_ISSUER }}
+          IOS_PUBLISH_API_KEY_CONTENT: ${{ secrets.IOS_PUBLISH_API_KEY_CONTENT }}
+
+      - name: send notification
         uses: appleboy/telegram-action@master
         with:
           to: ${{ secrets.TELEGRAM_CHAT_ID }}
           token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          message: notification from github actions
+          message: build success
