@@ -52,10 +52,3 @@ jobs:
           IOS_PUBLISH_API_KEY: ${{ secrets.IOS_PUBLISH_API_KEY }}
           IOS_PUBLISH_API_ISSUER: ${{ secrets.IOS_PUBLISH_API_ISSUER }}
           IOS_PUBLISH_API_KEY_CONTENT: ${{ secrets.IOS_PUBLISH_API_KEY_CONTENT }}
-
-      - name: send notification
-        uses: appleboy/telegram-action@master
-        with:
-          to: ${{ secrets.TELEGRAM_CHAT_ID }}
-          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          message: build success

@@ -8,11 +8,7 @@ set -x
 # поднимаем версию пакета
 VER=$(cider bump build)
 
-# устанавливаем переменные окружения из файла .env
-source .env
-
-# собираем файл архива
-flutter build ios --release --no-codesign
-
-# запускаем сборку и публикацию пакета
-cd ios && fastlane beta
+# коммитим версию пакета и отправляем на ветку ci-cd
+git add .
+git commit -m "bump version to $VER"
+git push origin ci-cd
