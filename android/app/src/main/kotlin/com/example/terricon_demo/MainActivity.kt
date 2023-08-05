@@ -1,4 +1,4 @@
-package com.example.terricon_demo
+package com.alexeykorzhavin.terricon.demo
 
 import io.flutter.embedding.android.FlutterActivity
 

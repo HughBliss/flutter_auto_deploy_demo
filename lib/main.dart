@@ -26,9 +26,10 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Image.asset('assets/animated_logo.gif'),
-      ),
+      body: ListView(children: [
+        Image.asset('assets/animated_logo.gif'),
+        const Text('Hello, World!'),
+      ]),
     );
   }
 }
